@@ -1,0 +1,38 @@
+{
+  "name": "helmet-static",
+  "version": "1.0.0",
+  "description": "Create a static index.html for your sub pages with rendered helmet attributes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "helmet-static": "./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MauriceButler/helmet-static.git"
+  },
+  "author": "Maurice Butler <maurice.butler@gmail.com> (http://maur.us/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MauriceButler/helmet-static/issues"
+  },
+  "homepage": "https://github.com/MauriceButler/helmet-static#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "mkdirp": "^0.5.1",
+    "puppeteer": "^1.1.1",
+    "queue-batch": "^1.0.2",
+    "serve-static": "^1.13.2"
+  },
+  "keywords": [
+    "snapshot",
+    "ssr",
+    "helmet",
+    "head",
+    "meta",
+    "facebook",
+    "share"
+  ]
+}
