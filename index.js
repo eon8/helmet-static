@@ -25,7 +25,6 @@ const baseConfig = {
     routes: ['/'],
 };
 
-fs.writeFileSync('./baseConfig.json', JSON.stringify(baseConfig, null, 4));
 const loadedConfig = require(path.join(process.cwd(), 'helmet-static'));
 const config = { ...baseConfig, ...loadedConfig };
 
