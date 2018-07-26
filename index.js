@@ -8,16 +8,11 @@ const puppeteer = require('puppeteer');
 const cheerio = require('cheerio');
 const server = require('./server');
 
-const mainIndex = fs.readFileSync(path.join(process.cwd(), './dist/index.html')).toString();
-const mainIndexDocument = cheerio.load(mainIndex);
-
-mainIndexDocument('[data-react-helmet]').remove();
-const template = mainIndexDocument.html();
-
 const port = 3001;
 
 const baseConfig = {
     basePath: path.join(process.cwd(), 'dist'),
+    rootDocument: 'index.html',
     port,
     rootUrl: `http://localhost:${port}`,
     waitTime: 200,
@@ -27,6 +22,12 @@ const baseConfig = {
 
 const loadedConfig = require(path.join(process.cwd(), 'helmet-static'));
 const config = { ...baseConfig, ...loadedConfig };
+
+const mainIndex = fs.readFileSync(path.join(config.basePath, config.rootDocument)).toString();
+const mainIndexDocument = cheerio.load(mainIndex);
+
+mainIndexDocument('[data-react-helmet]').remove();
+const template = mainIndexDocument.html();
 
 const skipExternalRequests = async page => {
     await page.setRequestInterception(true);
