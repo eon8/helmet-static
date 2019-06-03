@@ -30,6 +30,10 @@ mainIndexDocument('[data-react-helmet]').remove();
 const template = mainIndexDocument.html();
 
 const skipExternalRequests = async page => {
+    if(config.includeExternal){
+        return;
+    }
+
     await page.setRequestInterception(true);
     page.on('request', async request => {
         if (request.url().startsWith(config.rootUrl)) {

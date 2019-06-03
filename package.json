@@ -1,6 +1,6 @@
 {
   "name": "helmet-static",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Create a static index.html for your sub pages with rendered helmet attributes",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,7 @@
   "dependencies": {
     "cheerio": "^1.0.0-rc.2",
     "mkdirp": "^0.5.1",
-    "puppeteer": "^1.6.1",
+    "puppeteer": "^1.17.0",
     "queue-batch": "^1.0.2",
     "serve-static": "^1.13.2"
   },
