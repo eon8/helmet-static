@@ -50,12 +50,6 @@ const skipExternalRequests = async page => {
     });
 };
 
-async function shutdown(browser) {
-    console.timeEnd('Total time');
-    await browser.close();
-    process.exit(0);
-}
-
 async function getAndSavePage(browser, route, callback) {
     const timmingLabel = `Processed ${route} in`;
     const outputPath = path.join(config.basePath, route);
@@ -99,6 +93,14 @@ async function getAndSavePage(browser, route, callback) {
     });
 }
 
+function logAndExit(error) {
+    console.error(error);
+    process.exit(1);
+}
+
+process.on('uncaughtException', logAndExit);
+process.on('unhandledRejection', logAndExit);
+
 (async () => {
     server.serve(config.basePath, config.port);
 
@@ -108,12 +110,13 @@ async function getAndSavePage(browser, route, callback) {
     const queue = new Queue(getAndSavePage.bind(null, browser));
 
     queue.on('error', error => {
-        shutdown(browser);
         throw error;
     });
 
-    queue.on('empty', () => {
-        shutdown(browser);
+    queue.on('empty', async () => {
+        console.timeEnd('Total time');
+        await browser.close();
+        process.exit(0);
     });
 
     queue.concat(config.routes);
