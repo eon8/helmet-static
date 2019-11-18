@@ -11,10 +11,14 @@ The default config is below and you can overide any of it by exporting it from y
 ```json
 {
     "basePath": "./dist",
+    "rootDocument": "index.html",
     "port": 3001,
+    "rootUrl": "http://localhost:${port}",
     "waitTime": 200,
     "includeExternal": false,
-    "routes": ["/"]
+    "allowedExternalDomains": [],
+    "routes": ["/"],
+    "headless": true,
 }
 ```
 

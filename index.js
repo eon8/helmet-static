@@ -17,7 +17,9 @@ const baseConfig = {
     rootUrl: `http://localhost:${port}`,
     waitTime: 200,
     includeExternal: false,
+    allowedExternalDomains: [],
     routes: ['/'],
+    headless: true,
 };
 
 const loadedConfig = require(path.join(process.cwd(), 'helmet-static'));
@@ -30,13 +32,17 @@ mainIndexDocument('[data-react-helmet]').remove();
 const template = mainIndexDocument.html();
 
 const skipExternalRequests = async page => {
-    if(config.includeExternal){
+    if (config.includeExternal) {
         return;
     }
 
     await page.setRequestInterception(true);
     page.on('request', async request => {
-        if (request.url().startsWith(config.rootUrl)) {
+        const url = request.url();
+        if (
+            url.startsWith(config.rootUrl) ||
+            config.allowedExternalDomains.some(allowedDomain => url.startsWith(allowedDomain))
+        ) {
             request.continue();
         } else {
             request.abort();
@@ -52,35 +58,44 @@ async function shutdown(browser) {
 
 async function getAndSavePage(browser, route, callback) {
     const timmingLabel = `Processed ${route} in`;
+    const outputPath = path.join(config.basePath, route);
+    let error;
+    let newIndex;
 
     console.time(timmingLabel);
 
-    const target = `${config.rootUrl}${route}`;
-    const page = await browser.newPage();
+    try {
+        const target = `${config.rootUrl}${route}`;
+        const page = await browser.newPage();
 
-    await skipExternalRequests(page);
+        await skipExternalRequests(page);
 
-    await page.goto(target, { waitUntil: 'networkidle2' });
+        await page.goto(target);
 
-    await page.waitFor(config.waitTime);
+        await page.waitFor(config.waitTime);
 
-    const helmetItems = await page.evaluate(() =>
-        Array.from(document.querySelectorAll('[data-react-helmet]')).map(x => x.outerHTML),
-    );
+        const helmetItems = await page.evaluate(() =>
+            Array.from(document.querySelectorAll('[data-react-helmet]')).map(x => x.outerHTML),
+        );
 
-    await page.close();
+        await page.close();
 
-    const outputPath = path.join(config.basePath, route);
+        mkdirp.sync(outputPath);
 
-    mkdirp.sync(outputPath);
+        newIndex = cheerio.load(template);
 
-    const newIndex = cheerio.load(template);
+        newIndex('head').append(helmetItems);
+    } catch (exception) {
+        error = exception;
+    }
 
-    newIndex('head').append(helmetItems);
+    if (error) {
+        return callback(error);
+    }
 
-    fs.writeFile(path.join(outputPath, 'index.html'), newIndex.html(), error => {
+    fs.writeFile(path.join(outputPath, 'index.html'), newIndex.html(), writeFileError => {
         console.timeEnd(timmingLabel);
-        callback(error);
+        callback(writeFileError);
     });
 }
 
@@ -89,10 +104,11 @@ async function getAndSavePage(browser, route, callback) {
 
     console.time('Total time');
 
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({ headless: config.headless });
     const queue = new Queue(getAndSavePage.bind(null, browser));
 
     queue.on('error', error => {
+        shutdown(browser);
         throw error;
     });
 
