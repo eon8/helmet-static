@@ -28,7 +28,7 @@ const config = { ...baseConfig, ...loadedConfig };
 const mainIndex = fs.readFileSync(path.join(config.basePath, config.rootDocument)).toString();
 const mainIndexDocument = cheerio.load(mainIndex);
 
-mainIndexDocument('[data-react-helmet]').remove();
+mainIndexDocument('[data-react-helmet], head title').remove();
 const template = mainIndexDocument.html();
 
 const skipExternalRequests = async page => {
@@ -69,7 +69,7 @@ async function getAndSavePage(browser, route, callback) {
         await page.waitFor(config.waitTime);
 
         const helmetItems = await page.evaluate(() =>
-            Array.from(document.querySelectorAll('[data-react-helmet]')).map(x => x.outerHTML),
+            Array.from(document.querySelectorAll('[data-react-helmet], head title')).map(x => x.outerHTML),
         );
 
         await page.close();
