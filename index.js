@@ -20,6 +20,7 @@ const baseConfig = {
     allowedExternalDomains: [],
     routes: ['/'],
     headless: true,
+    navigationTimeout: 30000,
 };
 
 const loadedConfig = require(path.join(process.cwd(), 'helmet-static'));
@@ -31,17 +32,17 @@ const mainIndexDocument = cheerio.load(mainIndex);
 mainIndexDocument('[data-react-helmet], head title').remove();
 const template = mainIndexDocument.html();
 
-const skipExternalRequests = async page => {
+const skipExternalRequests = async (page) => {
     if (config.includeExternal) {
         return;
     }
 
     await page.setRequestInterception(true);
-    page.on('request', async request => {
+    page.on('request', async (request) => {
         const url = request.url();
         if (
             url.startsWith(config.rootUrl) ||
-            config.allowedExternalDomains.some(allowedDomain => url.startsWith(allowedDomain))
+            config.allowedExternalDomains.some((allowedDomain) => url.startsWith(allowedDomain))
         ) {
             request.continue();
         } else {
@@ -62,6 +63,8 @@ async function getAndSavePage(browser, route, callback) {
         const target = `${config.rootUrl}${route}`;
         const page = await browser.newPage();
 
+        await page.setDefaultNavigationTimeout(config.navigationTimeout);
+
         await skipExternalRequests(page);
 
         await page.goto(target);
@@ -69,7 +72,7 @@ async function getAndSavePage(browser, route, callback) {
         await page.waitFor(config.waitTime);
 
         const helmetItems = await page.evaluate(() =>
-            Array.from(document.querySelectorAll('[data-react-helmet], head title')).map(x => x.outerHTML),
+            Array.from(document.querySelectorAll('[data-react-helmet], head title')).map((x) => x.outerHTML),
         );
 
         await page.close();
@@ -87,7 +90,7 @@ async function getAndSavePage(browser, route, callback) {
         return callback(error);
     }
 
-    fs.writeFile(path.join(outputPath, 'index.html'), newIndex.html(), writeFileError => {
+    fs.writeFile(path.join(outputPath, 'index.html'), newIndex.html(), (writeFileError) => {
         console.timeEnd(timmingLabel);
         callback(writeFileError);
     });
@@ -109,7 +112,7 @@ process.on('unhandledRejection', logAndExit);
     const browser = await puppeteer.launch({ headless: config.headless });
     const queue = new Queue(getAndSavePage.bind(null, browser));
 
-    queue.on('error', error => {
+    queue.on('error', (error) => {
         throw error;
     });
 
