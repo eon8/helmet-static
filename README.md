@@ -15,10 +15,11 @@ The default config is below and you can overide any of it by exporting it from y
     "port": 3001,
     "rootUrl": "http://localhost:${port}",
     "waitTime": 200,
+    "navigationTimeout": 30000,
     "includeExternal": false,
     "allowedExternalDomains": [],
     "routes": ["/"],
-    "headless": true,
+    "headless": true
 }
 ```
 
