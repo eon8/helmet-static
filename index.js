@@ -69,7 +69,7 @@ async function getAndSavePage(browser, route, callback) {
 
         await page.goto(target);
 
-        await page.waitFor(config.waitTime);
+        await page.waitForTimeout(config.waitTime);
 
         const helmetItems = await page.evaluate(() =>
             Array.from(document.querySelectorAll('[data-react-helmet], head title')).map((x) => x.outerHTML),
