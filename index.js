@@ -23,7 +23,14 @@ const baseConfig = {
     navigationTimeout: 30000,
 };
 
-const loadedConfig = require(path.join(process.cwd(), 'helmet-static'));
+const configFlagIndex = process.argv.indexOf('-c');
+let customConfigPath;
+
+if (configFlagIndex > 1) {
+    customConfigPath = process.argv[configFlagIndex + 1];
+}
+
+const configPath = path.join(process.cwd(), customConfigPath || 'helmet-static');
 const config = { ...baseConfig, ...loadedConfig };
 
 const mainIndex = fs.readFileSync(path.join(config.basePath, config.rootDocument)).toString();

@@ -4,7 +4,7 @@ Create a static index.html for your sub pages with rendered helmet attributes
 
 ## How
 
-Add a `helmet-static.js` to your root, and at a minimum provide it the routes to process.
+Add a `helmet-static.js` to your root (or provide the config file path with `-c <path to config file>`), and at a minimum provide it the routes to process.
 
 The default config is below and you can overide any of it by exporting it from your `helmet-static.js` file
 
