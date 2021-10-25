@@ -31,6 +31,7 @@ if (configFlagIndex > 1) {
 }
 
 const configPath = path.join(process.cwd(), customConfigPath || 'helmet-static');
+const loadedConfig = require(configPath);
 const config = { ...baseConfig, ...loadedConfig };
 
 const mainIndex = fs.readFileSync(path.join(config.basePath, config.rootDocument)).toString();
