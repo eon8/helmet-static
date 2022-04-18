@@ -1,6 +1,6 @@
 {
   "name": "helmet-static",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "description": "Create a static index.html for your sub pages with rendered helmet attributes",
   "main": "index.js",
   "scripts": {
