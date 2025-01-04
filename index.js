@@ -117,7 +117,13 @@ process.on('unhandledRejection', logAndExit);
 
     console.time('Total time');
 
-    const browser = await puppeteer.launch({ headless: config.headless });
+    const browser = await puppeteer.launch({
+        headless: config.headless,
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox'
+        ],
+    });
     const queue = new Queue(getAndSavePage.bind(null, browser));
 
     queue.on('error', (error) => {
